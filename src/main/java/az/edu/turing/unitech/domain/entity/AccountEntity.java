@@ -1,6 +1,6 @@
 package az.edu.turing.unitech.domain.entity;
 
-import az.edu.turing.unitech.domain.enums.Status;
+import az.edu.turing.unitech.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,6 +37,5 @@ public class AccountEntity {
     @ManyToOne
     @JoinColumn(name ="user_id")
     private UserEntity user;
-
 
 }
