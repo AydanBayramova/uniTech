@@ -19,6 +19,10 @@ public class AccountEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
+    @Column(nullable = false, unique = true, length = 20)
+    private String accountNumber;
+
+    @Enumerated(EnumType.STRING)
     private AccountStatus status;
 
     @Column(nullable = false)
