@@ -1,14 +1,26 @@
 package az.edu.turing.unitech.service;
 
-import az.edu.turing.unitech.domain.repository.AccountRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import az.edu.turing.unitech.model.dto.AccountDto;
+import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class AccountService {
-    private final AccountRepository accountRepository;
+public interface AccountService {
+
+    AccountDto createAccount(AccountDto accountDto);
+
+    AccountDto updateAccount(Long id, AccountDto accountDto);
 
 
+    AccountDto transferToOwnAccount(String accountNumber, Double amount);
 
+
+    AccountDto transferToAnotherAccount(String cardNumber, String pin, Double amount);
+
+
+    void deleteAccountById(Long id);
+
+
+    List<AccountDto> getAllAccounts();
+
+
+    AccountDto addBalance(String accountNumber, Double amount);
 }
