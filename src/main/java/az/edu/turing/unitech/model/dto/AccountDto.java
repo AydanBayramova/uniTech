@@ -1,7 +1,9 @@
-package az.edu.turing.unitech.domain.entity;
+package az.edu.turing.unitech.model.dto;
 
 import az.edu.turing.unitech.model.enums.AccountStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,14 +11,12 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AccountEntity {
+@NoArgsConstructor
+public class AccountDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "accountId cannot be null")
     private Long accountId;
 
     private AccountStatus status;
@@ -34,8 +34,8 @@ public class AccountEntity {
 
     private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name ="user_id")
-    private UserEntity user;
+    @NotBlank(message = "AccounStatus is required")
+    @Enumerated(EnumType.STRING)
+    AccountStatus accountStatus;
 
 }
