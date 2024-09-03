@@ -31,6 +31,8 @@ public class UserEntity {
     @Size(min = 7, max = 7, message = ("Pin must be exactly 7 symbol!"))
     private String pin;
 
+    private String email;
+
     private LocalDateTime updateDate;
 
     private LocalDateTime createDate;

@@ -31,9 +31,6 @@ public class AccountEntity {
     @Column(nullable = false, length = 20)
     private String password;
 
-    @Column(nullable = false, unique = true, length = 16)
-    private String cardNumber;
-
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
