@@ -15,18 +15,18 @@ import javax.mail.MessagingException;
 public class NotificationImpl implements Notification {
 
     private final JavaMailSender mailSender;
+
     @Override
     public void sendAccountCreationNotification(AccountEntity accountEntity) {
         String email = accountEntity.getUser().getEmail();
-        String subject = "Hesab Uğurla Yaradıldı";
-        String message = "Hörmətli " + accountEntity.getUser().getFirstName() + ",\n\n"
-                + "Hesabınız uğurla yaradıldı.\n"
-                + "Hesab nömrəniz: " + accountEntity.getAccountNumber() + "\n"
-                + "Başlanğıc balans: " + accountEntity.getBalance() + "\n\n"
-                + "Təşəkkürlər, Turing Bank.";
+        String subject = "Account Successfully Created";
+        String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+                + "Your account has been successfully created.\n"
+                + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+                + "Initial balance: " + accountEntity.getBalance() + "\n\n"
+                + "Thank you, Turing Bank.";
 
-
-
+        sendEmail(email, subject, message);
     }
 
     @Override
@@ -46,7 +46,15 @@ public class NotificationImpl implements Notification {
 
     @Override
     public void sendAccountDeleteNotification(AccountEntity accountEntity) {
+        String email = accountEntity.getUser().getEmail();
+        String subject = "Your Account Has Been Deleted";
+        String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+                + "Your account has been successfully deleted.\n"
+                + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+                + "Your account balance: " + accountEntity.getBalance() + "\n\n"
+                + "Thank you for trusting Turing Bank.";
 
+        sendEmail(email, subject, message);
     }
 
     public void sendEmail(String to, String subject, String text) {
