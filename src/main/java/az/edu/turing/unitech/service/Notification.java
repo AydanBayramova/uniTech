@@ -1,7 +1,9 @@
 package az.edu.turing.unitech.service;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface Notification {
 
     void sendAccountCreationNotification(AccountEntity accountEntity);
