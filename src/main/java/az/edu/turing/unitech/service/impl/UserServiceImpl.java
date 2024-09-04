@@ -39,7 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<UserDto> getAll(Pageable pageable) {
-        return null;
+
+        Page<UserEntity> all = userRepository.findAll(pageable);
+        return all.map(userMapper::userEntityToDto);
     }
 
     @Override
@@ -62,9 +64,9 @@ public class UserServiceImpl implements UserService {
             throw new SecurityException("You do not have permission to delete this User");
         }
 
-           user.setStatus(Status.DELETED);
-           user.setUpdateDate(LocalDateTime.now());
-           userRepository.save(user);
+        user.setStatus(Status.DELETED);
+        user.setUpdateDate(LocalDateTime.now());
+        userRepository.save(user);
 
         for (AccountEntity account : user.getAccountEntities()) {
             account.setStatus(Status.DEACTIVATE);
@@ -81,6 +83,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void verifyUser(Long id) {
 
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+
+        if (user.getStatus() == Status.DEACTIVATE || user.getStatus() == Status.DELETED) {
+            throw new IllegalArgumentException("User is not active and cannot be verified");
+        }
+    }
+
+    @Override
+    public Page<UserDto> getAllByStatus(Status status, Pageable pageable) {
+
+        Page<UserEntity> allByStatus = userRepository.findAllByStatus(status, pageable);
+
+        return allByStatus.map(userMapper::userEntityToDto);
     }
 
 
