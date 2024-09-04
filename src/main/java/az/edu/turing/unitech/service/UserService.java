@@ -26,4 +26,5 @@ public interface UserService {
     void deleteAll();
 
     void verifyUser(Long id);
+
 }

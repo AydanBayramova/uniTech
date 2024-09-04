@@ -1,6 +1,7 @@
 package az.edu.turing.unitech.domain.entity;
 
-import az.edu.turing.unitech.model.enums.AccountStatus;
+import az.edu.turing.unitech.model.enums.Status;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class AccountEntity {
     private String accountNumber;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus status;
+    private Status status;
 
     @Column(nullable = false)
     private BigDecimal balance;
