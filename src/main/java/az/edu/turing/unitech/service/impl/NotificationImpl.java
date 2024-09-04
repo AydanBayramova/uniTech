@@ -37,6 +37,16 @@ public class NotificationImpl implements Notification {
     @Override
     public void sendPasswordChangeNotification(AccountEntity accountEntity) {
 
+       String email = accountEntity.getUser().getEmail();
+       String subject = "Password Change";
+       String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+               + "Your account has been successfully changed.\n"
+               + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+               + "Initial balance: " + accountEntity.getBalance() + "\n\n"
+               + "Thank you, Turing Bank.";
+
+       sendEmail(email, subject, message);
+
     }
 
     @Override

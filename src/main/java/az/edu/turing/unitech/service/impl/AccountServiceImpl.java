@@ -1,15 +1,17 @@
 package az.edu.turing.unitech.service.impl;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
+import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
-import az.edu.turing.unitech.domain.repository.UserRepository;
+import az.edu.turing.unitech.exception.IllegalArgumentException;
 import az.edu.turing.unitech.model.dto.AccountDto;
-import az.edu.turing.unitech.model.enums.AccountStatus;
+import az.edu.turing.unitech.model.enums.Status;
 import az.edu.turing.unitech.model.mapper.AccountMapper;
 import az.edu.turing.unitech.service.AccountService;
 import az.edu.turing.unitech.service.Notification;
 import az.edu.turing.unitech.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,7 @@ public class AccountServiceImpl implements AccountService {
     private final UserService userService;
     private final AccountMapper accountMapper;
     private final Notification notificationService;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -35,7 +38,7 @@ public class AccountServiceImpl implements AccountService {
         AccountEntity accountEntity = accountMapper.accountDtoToAccountEntity(accountDto);
         accountEntity.setCreatedAt(LocalDateTime.now());
         accountEntity.setUpdatedAt(LocalDateTime.now());
-        accountEntity.setStatus(AccountStatus.ACTIVE);
+        accountEntity.setStatus(Status.ACTIVE);
 
         AccountEntity save = accountRepository.save(accountEntity);
         notificationService.sendAccountCreationNotification(save);
@@ -74,7 +77,40 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
+
+    @Override
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        AccountEntity account = accountRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, account.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+        if (passwordEncoder.matches(newPassword, account.getPassword())) {
+            throw new IllegalArgumentException("New password cannot be the same as the old password");
+        }
+
+        validateNewPassword(newPassword);
+
+        String encode = passwordEncoder.encode(newPassword);
+
+        account.setPassword(encode);
+        account.setUpdatedAt(LocalDateTime.now());
+        accountRepository.save(account);
+
+        notificationService.sendPasswordChangeNotification(account);
+
+    }
+
     private String generateUniqueAccountNumber() {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
     }
+
+    private void validateNewPassword(String newPassword) {
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new IllegalArgumentException("New password must be at least 6 characters");
+        }
+    }
+
+
 }
