@@ -89,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
         Session session = em.unwrap(Session.class);
         Filter filter= session.enableFilter("statusFilter");
         filter.setParameter("status", Status.ACTIVE);
-        List<AccountDto> activeAccounts=accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
+        List<AccountDto> activeAccounts =accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
         session.disableFilter("statusFilter");
         return activeAccounts;
     }
