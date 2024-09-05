@@ -12,8 +12,10 @@ public interface Notification {
 
     void sendPasswordChangeNotification(AccountEntity accountEntity);
 
-    void sendPasswordResetNotification(AccountEntity accountEntity);
+    void sendUpdateAccount(AccountEntity accountEntity);
 
     void sendAccountDeleteNotification(AccountEntity accountEntity);
+
+    void sendAccountByNumberNotification(AccountEntity accountEntity,String accountNumber);
 
 }

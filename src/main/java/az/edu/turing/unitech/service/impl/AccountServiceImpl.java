@@ -14,6 +14,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Filter;
 import org.hibernate.Session;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -64,20 +65,12 @@ public class AccountServiceImpl implements AccountService {
         return null;
     }
 
-    @Override
-    public AccountDto transferToOwnAccount(String accountNumber, Double amount) {
-        return null;
-    }
-
-    @Override
-    public AccountDto transferToAnotherAccount(String cardNumber, String pin, Double amount) {
-        return null;
-    }
 
     @Override
     public void deleteAccountByAccountNumber(String accountNumber) {
         accountRepository.findByAccountNumberAndStatus(accountNumber, Status.ACTIVE)
                 .orElseThrow(() -> new AccountNotFoundException("NO SUCH ACCOUNT"));
+
         accountRepository.deleteByAccountNumber(accountNumber);
     }
 
@@ -134,6 +127,7 @@ public class AccountServiceImpl implements AccountService {
         AccountEntity entity = accountEntity.get();
         entity.setBalance(entity.getBalance().add(BigDecimal.valueOf(amount)));
         accountRepository.save(entity);
+        notificationService.sendBalanceUpdateNotification(entity);
         return accountMapper.accountEntityToDto(entity);
     }
 

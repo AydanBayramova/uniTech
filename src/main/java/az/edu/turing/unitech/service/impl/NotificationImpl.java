@@ -9,9 +9,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 
-import javax.mail.MessagingException;
-
-
 @RequiredArgsConstructor
 public class NotificationImpl implements Notification {
 
@@ -33,6 +30,14 @@ public class NotificationImpl implements Notification {
     @Override
     public void sendBalanceUpdateNotification(AccountEntity accountEntity) {
 
+        String email = accountEntity.getUser().getEmail();
+        String subject = "Balance Successfully Updated";
+        String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+                + "Your balance has been successfully updated.\n"
+                + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+                + "Initial balance: " + accountEntity.getBalance() + "\n\n"
+                + "Thank you, Turing Bank.";
+        sendEmail(email, subject, message);
     }
 
     @Override
@@ -43,7 +48,6 @@ public class NotificationImpl implements Notification {
         String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
                 + "Your account has been successfully changed.\n"
                 + "Your account number: " + accountEntity.getAccountNumber() + "\n"
-                + "Initial balance: " + accountEntity.getBalance() + "\n\n"
                 + "Thank you, Turing Bank.";
 
         sendEmail(email, subject, message);
@@ -51,7 +55,14 @@ public class NotificationImpl implements Notification {
     }
 
     @Override
-    public void sendPasswordResetNotification(AccountEntity accountEntity) {
+    public void sendUpdateAccount(AccountEntity accountEntity) {
+        String email = accountEntity.getUser().getEmail();
+        String subject = "Account email update";
+        String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+                + "Your email has been successfully updated.\n"
+                + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+                + "Thank you, Turing Bank.";
+        sendEmail(email, subject, message);
 
     }
 
@@ -66,6 +77,19 @@ public class NotificationImpl implements Notification {
                 + "Thank you for trusting Turing Bank.";
 
         sendEmail(email, subject, message);
+    }
+
+    @Override
+    public void sendAccountByNumberNotification(AccountEntity accountEntity, String accountNumber) {
+        String email = accountEntity.getUser().getEmail();
+        String subject = "Your account deActive by account number: " + accountEntity.getAccountNumber();
+        String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+                + "Your account has been successfully activated.\n"
+                + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+                + "Your account balance: " + accountEntity.getStatus() + "\n\n"
+                + "Thank you for trusting Turing Bank.";
+        sendEmail(email, subject, message);
+
     }
 
     public void sendEmail(String to, String subject, String text) {
