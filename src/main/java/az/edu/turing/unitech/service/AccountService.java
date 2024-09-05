@@ -1,5 +1,7 @@
 package az.edu.turing.unitech.service;
 
+import az.edu.turing.unitech.domain.entity.UserEntity;
+import az.edu.turing.unitech.exception.IllegalArgumentException;
 import az.edu.turing.unitech.model.dto.AccountDto;
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +27,7 @@ public interface AccountService {
     Optional<AccountDto> getDeactivatedAccountByAccountNumber(String accountNumber);
 
     AccountDto addBalance(String accountNumber, Double amount);
+
+
+    void changePassword(Long userId, String oldPassword, String newPassword);
 }

@@ -1,6 +1,7 @@
 package az.edu.turing.unitech.model.dto;
 
 import az.edu.turing.unitech.domain.entity.UserEntity;
+import az.edu.turing.unitech.model.enums.Status;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -19,4 +20,6 @@ public class AccountDto {
     private String cardNumber;
 
     private UserEntity user;
+
+    private Status status;
 }

@@ -1,5 +1,6 @@
 package az.edu.turing.unitech.domain.entity;
 
+import az.edu.turing.unitech.model.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,9 @@ public class UserEntity {
     private String email;
 
     private LocalDateTime updateDate;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     private LocalDateTime createDate;
 
