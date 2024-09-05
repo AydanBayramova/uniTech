@@ -16,9 +16,11 @@ public interface AccountService {
 
     AccountDto transferToAnotherAccount(String accountNumber, String pin, Double amount);
 
-    void deleteAccountById(Long id);
+    void deleteAccountByAccountNumber(String accountNumber);
 
     List<AccountDto> getAllAccounts();
+
+    List<AccountDto> getAllActiveAccounts();
 
     List<AccountDto> getAllDeactivateAccounts();
 

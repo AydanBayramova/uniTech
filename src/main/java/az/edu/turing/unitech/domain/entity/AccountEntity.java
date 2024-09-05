@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "accounts")
-@SQLDelete(sql = "UPDATE accounts SET status= 'DEACTIVATE' WHERE id=?")
+@SQLDelete(sql = "UPDATE accounts SET status= 'DEACTIVATE' WHERE accountNumber=?")
 @FilterDef(name = "statusFilter", parameters = @ParamDef(name = "status", type = Status.class))
 @Filter(name = "statusFilter", condition = "status = :status")
 public class AccountEntity {

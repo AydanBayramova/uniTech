@@ -15,7 +15,7 @@ import java.util.List;
 public class AccountController {
     private final AccountService accountService;
 
-    @GetMapping("/all")
+   /*  @GetMapping("/all")
     public ResponseEntity<List<AccountDto>> getAllAccounts() {
         List<AccountDto> accounts = accountService.getAllAccounts();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
@@ -41,6 +41,8 @@ public class AccountController {
         return new ResponseEntity<>(updatedAccount,HttpStatus.CREATED);
     }
 
+
+    */
 
 
 }

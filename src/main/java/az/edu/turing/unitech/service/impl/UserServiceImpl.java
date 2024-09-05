@@ -72,6 +72,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void verifyUser(Long id) {
+
+    }
+
 //    @Override
 //    public void verifyUser(Long id) {
 //
