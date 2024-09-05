@@ -1,7 +1,6 @@
 package az.edu.turing.unitech.service.impl;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
-import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
 import az.edu.turing.unitech.model.dto.AccountDto;
 import az.edu.turing.unitech.model.enums.Status;
@@ -13,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Filter;
 import org.hibernate.Session;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -86,7 +86,7 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountDto> getAllDeactivateAccounts() {
         Session session = em.unwrap(Session.class);
         Filter filter= session.enableFilter("statusFilter");
-        filter.setParameter("status", AccountStatus.DEACTIVATE);
+        filter.setParameter("status", Status.DEACTIVATE);
         List<AccountDto> deactivatedAccounts=accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
         session.disableFilter("statusFilter");
         return deactivatedAccounts;
@@ -95,14 +95,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Optional<AccountDto> getActiveAccountByAccountNumber(String accountNumber) {
         return accountRepository.
-                findByAccountNumberAndStatus(accountNumber, AccountStatus.ACTIVE).
+                findByAccountNumberAndStatus(accountNumber, Status.ACTIVE).
                 map(accountMapper::accountEntityToDto);
     }
 
     @Override
     public Optional<AccountDto> getDeactivatedAccountByAccountNumber(String accountNumber) {
         return accountRepository.
-                findByAccountNumberAndStatus(accountNumber, AccountStatus.DEACTIVATE).
+                findByAccountNumberAndStatus(accountNumber, Status.DEACTIVATE).
                 map(accountMapper::accountEntityToDto);
     }
 

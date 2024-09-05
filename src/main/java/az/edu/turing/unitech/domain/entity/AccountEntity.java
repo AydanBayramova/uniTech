@@ -1,7 +1,6 @@
 package az.edu.turing.unitech.domain.entity;
 
 import az.edu.turing.unitech.model.enums.Status;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "accounts")
 @SQLDelete(sql = "UPDATE accounts SET status= 'DEACTIVATE' WHERE id=?")
-@FilterDef(name = "statusFilter", parameters = @ParamDef(name = "status", type = AccountStatus.class))
+@FilterDef(name = "statusFilter", parameters = @ParamDef(name = "status", type = Status.class))
 @Filter(name = "statusFilter", condition = "status = :status")
 public class AccountEntity {
 
@@ -34,7 +33,7 @@ public class AccountEntity {
 
     @Enumerated(EnumType.STRING)
  
-    private AccountStatus status = AccountStatus.ACTIVE;
+    private Status status = Status.ACTIVE;
 
 
     @Column(nullable = false)
