@@ -3,20 +3,25 @@ package az.edu.turing.unitech.service.impl;
 import az.edu.turing.unitech.domain.entity.AccountEntity;
 import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
-import az.edu.turing.unitech.exception.IllegalArgumentException;
 import az.edu.turing.unitech.model.dto.AccountDto;
 import az.edu.turing.unitech.model.enums.Status;
 import az.edu.turing.unitech.model.mapper.AccountMapper;
 import az.edu.turing.unitech.service.AccountService;
 import az.edu.turing.unitech.service.Notification;
 import az.edu.turing.unitech.service.UserService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.hibernate.Filter;
+import org.hibernate.Session;
+import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+@Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
@@ -24,7 +29,12 @@ public class AccountServiceImpl implements AccountService {
     private final UserService userService;
     private final AccountMapper accountMapper;
     private final Notification notificationService;
+
+    private final EntityManager em;
+
     private final PasswordEncoder passwordEncoder;
+
+ 
 
 
     @Override
@@ -70,6 +80,30 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDto> getAllAccounts() {
         return List.of();
+    }
+
+    @Override
+    public List<AccountDto> getAllDeactivateAccounts() {
+        Session session = em.unwrap(Session.class);
+        Filter filter= session.enableFilter("statusFilter");
+        filter.setParameter("status", AccountStatus.DEACTIVATE);
+        List<AccountDto> deactivatedAccounts=accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
+        session.disableFilter("statusFilter");
+        return deactivatedAccounts;
+    }
+
+    @Override
+    public Optional<AccountDto> getActiveAccountByAccountNumber(String accountNumber) {
+        return accountRepository.
+                findByAccountNumberAndStatus(accountNumber, AccountStatus.ACTIVE).
+                map(accountMapper::accountEntityToDto);
+    }
+
+    @Override
+    public Optional<AccountDto> getDeactivatedAccountByAccountNumber(String accountNumber) {
+        return accountRepository.
+                findByAccountNumberAndStatus(accountNumber, AccountStatus.DEACTIVATE).
+                map(accountMapper::accountEntityToDto);
     }
 
     @Override
