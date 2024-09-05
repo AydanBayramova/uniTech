@@ -23,10 +23,7 @@ public interface UserService {
 
     void deleteById(Long id);
 
-    void deleteAll();
-
     void verifyUser(Long id);
 
-    Page<UserDto> getAllByStatus(Status status, Pageable pageable);
 
 }

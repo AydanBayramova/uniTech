@@ -12,10 +12,6 @@ public interface AccountService {
 
     AccountDto updateAccount(Long id, AccountDto accountDto);
 
-    AccountDto transferToOwnAccount(String accountNumber, Double amount);
-
-    AccountDto transferToAnotherAccount(String accountNumber, String pin, Double amount);
-
     void deleteAccountByAccountNumber(String accountNumber);
 
     List<AccountDto> getAllAccounts();
