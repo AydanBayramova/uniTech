@@ -27,6 +27,9 @@ public class UserEntity {
     @Column(name = "lastname", nullable = false, length = 15)
     private String lastName;
 
+    @Column(nullable = false)
+    private String password;
+
     @Column(name = "pin", nullable = false, unique = true, length = 7)
     @Size(min = 7, max = 7, message = ("Pin must be exactly 7 symbol!"))
     private String pin;
