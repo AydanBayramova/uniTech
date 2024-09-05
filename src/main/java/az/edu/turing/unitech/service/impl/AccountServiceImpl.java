@@ -123,7 +123,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto addBalance(String accountNumber, Double amount) {
-        Optional accountEntity = accountRepository.findByAccountNumberAndStatus(accountNumber, Status.ACTIVE);
+        Optional<AccountEntity> accountEntity = accountRepository.findByAccountNumberAndStatus(accountNumber, Status.ACTIVE);
         if (accountEntity.isEmpty()) {
             throw new AccountNotFoundException("Account with number " + accountNumber + " not found.");
         }
@@ -131,7 +131,7 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidAmountException("Amount to add must be greater than zero.");
         }
 
-        AccountEntity entity = (AccountEntity) accountEntity.get();
+        AccountEntity entity = accountEntity.get();
         entity.setBalance(entity.getBalance().add(BigDecimal.valueOf(amount)));
         accountRepository.save(entity);
         return accountMapper.accountEntityToDto(entity);
