@@ -1,18 +1,27 @@
 package az.edu.turing.unitech.domain.entity;
 
-import az.edu.turing.unitech.model.enums.AccountStatus;
+import az.edu.turing.unitech.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
+
 @Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "accounts")
+@SQLDelete(sql = "UPDATE accounts SET status= 'DEACTIVATE' WHERE id=?")
+@FilterDef(name = "statusFilter", parameters = @ParamDef(name = "status", type = Status.class))
+@Filter(name = "statusFilter", condition = "status = :status")
 public class AccountEntity {
 
     @Id
@@ -23,7 +32,9 @@ public class AccountEntity {
     private String accountNumber;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus status;
+ 
+    private Status status = Status.ACTIVE;
+
 
     @Column(nullable = false)
     private BigDecimal balance;
@@ -36,7 +47,6 @@ public class AccountEntity {
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name ="user_id")
+    @JoinColumn(name = "user_id")
     private UserEntity user;
-
 }

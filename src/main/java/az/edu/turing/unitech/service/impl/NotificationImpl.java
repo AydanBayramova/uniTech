@@ -1,6 +1,7 @@
 package az.edu.turing.unitech.service.impl;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
+import az.edu.turing.unitech.exception.EmailSendingException;
 import az.edu.turing.unitech.service.Notification;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,16 @@ public class NotificationImpl implements Notification {
     @Override
     public void sendPasswordChangeNotification(AccountEntity accountEntity) {
 
+        String email = accountEntity.getUser().getEmail();
+        String subject = "Password Change";
+        String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+                + "Your account has been successfully changed.\n"
+                + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+                + "Initial balance: " + accountEntity.getBalance() + "\n\n"
+                + "Thank you, Turing Bank.";
+
+        sendEmail(email, subject, message);
+
     }
 
     @Override
@@ -69,6 +80,8 @@ public class NotificationImpl implements Notification {
             mailSender.send(mimeMessage);
         } catch (jakarta.mail.MessagingException e) {
             throw new RuntimeException(e);
+        } catch (RuntimeException e) {
+            throw new EmailSendingException("Email can't be sending" + e);
         }
     }
 }

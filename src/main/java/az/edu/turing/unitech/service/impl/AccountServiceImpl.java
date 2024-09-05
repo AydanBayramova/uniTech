@@ -2,28 +2,26 @@ package az.edu.turing.unitech.service.impl;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
-import az.edu.turing.unitech.domain.repository.UserRepository;
-import az.edu.turing.unitech.exception.AccountNotFoundException;
-import az.edu.turing.unitech.exception.CannotDeleteActiveAccountException;
-import az.edu.turing.unitech.exception.InvalidAmountException;
-import az.edu.turing.unitech.exception.NoActiveAccountsFoundException;
 import az.edu.turing.unitech.model.dto.AccountDto;
-import az.edu.turing.unitech.model.enums.AccountStatus;
+import az.edu.turing.unitech.model.enums.Status;
 import az.edu.turing.unitech.model.mapper.AccountMapper;
 import az.edu.turing.unitech.service.AccountService;
 import az.edu.turing.unitech.service.Notification;
 import az.edu.turing.unitech.service.UserService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.hibernate.Filter;
+import org.hibernate.Session;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Optional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+@Service
 @RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
@@ -31,7 +29,14 @@ public class AccountServiceImpl implements AccountService {
     private final UserService userService;
     private final AccountMapper accountMapper;
     private final Notification notificationService;
-    private final AccountStatus accountStatus;
+
+    private final EntityManager em;
+
+    private final PasswordEncoder passwordEncoder;
+
+ 
+
+
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
 
@@ -43,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
         AccountEntity accountEntity = accountMapper.accountDtoToAccountEntity(accountDto);
         accountEntity.setCreatedAt(LocalDateTime.now());
         accountEntity.setUpdatedAt(LocalDateTime.now());
-        accountEntity.setStatus(AccountStatus.ACTIVE);
+        accountEntity.setStatus(Status.ACTIVE);
 
         AccountEntity save = accountRepository.save(accountEntity);
         notificationService.sendAccountCreationNotification(save);
@@ -67,62 +72,79 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')") // For only admins
     public void deleteAccountById(Long id) {
-        AccountEntity accountEntity = accountRepository.findById(id)
-                .orElseThrow(() -> new AccountNotFoundException("Account with ID " + id + " not found"));
-        if (accountEntity.getStatus() == AccountStatus.ACTIVE) {
-            throw new CannotDeleteActiveAccountException("Active accounts cannot be deleted.");
-        }
-        AccountDto accountDto = accountMapper.accountEntityToDto(accountEntity);
-        accountRepository.delete(accountEntity);
-        postDeleteOperations(accountDto);
-    }
 
-    //Operations will be performed after the account is deleted
-    private void postDeleteOperations(AccountDto accountDto) {
 
-    }
-
-    @Override
-    public List<AccountDto> getAllActiveAccounts() {
-        List<AccountEntity> accountEntities = accountRepository.findAll();
-        List<AccountEntity> activeAccounts=accountEntities.stream()
-                .filter(account -> account.getStatus() == AccountStatus.ACTIVE)
-                .collect(Collectors.toList());
-
-        if(activeAccounts.isEmpty()){
-            throw new NoActiveAccountsFoundException("No active accounts found.");
-        }
-
-        List<AccountDto> accountDtos=accountMapper.accountEntityListToAccountDtoList(activeAccounts);
-        return accountDtos;
     }
 
     @Override
     public List<AccountDto> getAllAccounts() {
-          List<AccountEntity> accountEntities = accountRepository.findAll();
-          List<AccountDto> accountdtos= accountMapper.accountEntityListToAccountDtoList(accountEntities);
-          return accountdtos;
+        return List.of();
+    }
+
+    @Override
+    public List<AccountDto> getAllDeactivateAccounts() {
+        Session session = em.unwrap(Session.class);
+        Filter filter= session.enableFilter("statusFilter");
+        filter.setParameter("status", Status.DEACTIVATE);
+        List<AccountDto> deactivatedAccounts=accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
+        session.disableFilter("statusFilter");
+        return deactivatedAccounts;
+    }
+
+    @Override
+    public Optional<AccountDto> getActiveAccountByAccountNumber(String accountNumber) {
+        return accountRepository.
+                findByAccountNumberAndStatus(accountNumber, Status.ACTIVE).
+                map(accountMapper::accountEntityToDto);
+    }
+
+    @Override
+    public Optional<AccountDto> getDeactivatedAccountByAccountNumber(String accountNumber) {
+        return accountRepository.
+                findByAccountNumberAndStatus(accountNumber, Status.DEACTIVATE).
+                map(accountMapper::accountEntityToDto);
+    }
+
+    @Override
+    public AccountDto addBalance(String accountNumber, Double amount) {
+        return null;
     }
 
 
     @Override
-    public AccountDto addBalance(String accountNumber, Double amount) {
-        AccountEntity accountEntity = accountRepository.findByAccountNumber(accountNumber);
-        if (accountEntity == null) {
-            throw new AccountNotFoundException("Account with number " + accountNumber + " not found");
+    public void changePassword(Long userId, String oldPassword, String newPassword) {
+        AccountEntity account = accountRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (!passwordEncoder.matches(oldPassword, account.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
         }
-        if (amount == null || amount <= 0) {
-            throw new InvalidAmountException("Amount to add must be greater than zero.");
+        if (passwordEncoder.matches(newPassword, account.getPassword())) {
+            throw new IllegalArgumentException("New password cannot be the same as the old password");
         }
-        BigDecimal newBalance = accountEntity.getBalance().add(BigDecimal.valueOf(amount));
-        accountRepository.save(accountEntity);
-        return accountMapper.accountEntityToDto(accountEntity);
+
+        validateNewPassword(newPassword);
+
+        String encode = passwordEncoder.encode(newPassword);
+
+        account.setPassword(encode);
+        account.setUpdatedAt(LocalDateTime.now());
+        accountRepository.save(account);
+
+        notificationService.sendPasswordChangeNotification(account);
+
     }
 
     private String generateUniqueAccountNumber() {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
     }
+
+    private void validateNewPassword(String newPassword) {
+        if (newPassword == null || newPassword.length() < 6) {
+            throw new IllegalArgumentException("New password must be at least 6 characters");
+        }
+    }
+
 
 }

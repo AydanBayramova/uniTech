@@ -2,6 +2,7 @@ package az.edu.turing.unitech.service;
 
 import az.edu.turing.unitech.domain.repository.UserRepository;
 import az.edu.turing.unitech.model.dto.UserDto;
+import az.edu.turing.unitech.model.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,4 +26,7 @@ public interface UserService {
     void deleteAll();
 
     void verifyUser(Long id);
+
+    Page<UserDto> getAllByStatus(Status status, Pageable pageable);
+
 }

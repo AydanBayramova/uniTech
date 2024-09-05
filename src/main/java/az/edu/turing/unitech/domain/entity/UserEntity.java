@@ -1,13 +1,12 @@
 package az.edu.turing.unitech.domain.entity;
 
+import az.edu.turing.unitech.model.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
