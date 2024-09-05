@@ -66,10 +66,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public void verifyUser(Long id) {
 
-        UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
     }
+
+//    @Override
+//    public void verifyUser(Long id) {
+//
+//        UserEntity user = userRepository.findById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+//
+//        if (user.getStatus() == Status.DEACTIVATE || user.getStatus() == Status.DELETED) {
+//            throw new IllegalArgumentException("User is not active and cannot be verified");
+//        }
+//    }
+
 
     @Override
     public Page<UserDto> getAllByStatus(Status status, Pageable pageable) {

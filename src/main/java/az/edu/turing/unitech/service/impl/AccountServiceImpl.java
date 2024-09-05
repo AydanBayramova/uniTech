@@ -2,6 +2,8 @@ package az.edu.turing.unitech.service.impl;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
+import az.edu.turing.unitech.exception.AccountNotFoundException;
+import az.edu.turing.unitech.exception.InvalidAmountException;
 import az.edu.turing.unitech.model.dto.AccountDto;
 import az.edu.turing.unitech.model.enums.Status;
 import az.edu.turing.unitech.model.mapper.AccountMapper;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -72,14 +75,26 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deleteAccountById(Long id) {
-
-
+    public void deleteAccountByAccountNumber(String accountNumber) {
+        accountRepository.findByAccountNumberAndStatus(accountNumber, Status.ACTIVE)
+                .orElseThrow(() -> new AccountNotFoundException("NO SUCH ACCOUNT"));
+        accountRepository.deleteByAccountNumber(accountNumber);
     }
+
 
     @Override
     public List<AccountDto> getAllAccounts() {
-        return List.of();
+        List<AccountEntity> accountEntities = accountRepository.findAll();
+        return accountMapper.accountEntityListToAccountDtoList(accountEntities);
+    }
+    @Override
+    public List<AccountDto> getAllActiveAccounts() {
+        Session session = em.unwrap(Session.class);
+        Filter filter= session.enableFilter("statusFilter");
+        filter.setParameter("status", Status.ACTIVE);
+        List<AccountDto> activeAccounts=accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
+        session.disableFilter("statusFilter");
+        return activeAccounts;
     }
 
     @Override
@@ -108,9 +123,19 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto addBalance(String accountNumber, Double amount) {
-        return null;
-    }
+        Optional accountEntity = accountRepository.findByAccountNumberAndStatus(accountNumber, Status.ACTIVE);
+        if (accountEntity.isEmpty()) {
+            throw new AccountNotFoundException("Account with number " + accountNumber + " not found.");
+        }
+        if (amount == null || amount <= 0) {
+            throw new InvalidAmountException("Amount to add must be greater than zero.");
+        }
 
+        AccountEntity entity = (AccountEntity) accountEntity.get();
+        entity.setBalance(entity.getBalance().add(BigDecimal.valueOf(amount)));
+        accountRepository.save(entity);
+        return accountMapper.accountEntityToDto(entity);
+    }
 
     @Override
     public void changePassword(Long userId, String oldPassword, String newPassword) {
