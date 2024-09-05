@@ -1,10 +1,12 @@
 package az.edu.turing.unitech.service.impl;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
+import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
 import az.edu.turing.unitech.exception.AccountNotFoundException;
 import az.edu.turing.unitech.exception.InvalidAmountException;
 import az.edu.turing.unitech.model.dto.AccountDto;
+import az.edu.turing.unitech.model.dto.UserDto;
 import az.edu.turing.unitech.model.enums.Status;
 import az.edu.turing.unitech.model.mapper.AccountMapper;
 import az.edu.turing.unitech.service.AccountService;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Filter;
 import org.hibernate.Session;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -154,6 +158,15 @@ public class AccountServiceImpl implements AccountService {
         notificationService.sendPasswordChangeNotification(account);
 
     }
+
+    @Override
+    public Page<AccountDto> getAllByStatus(Status status, Pageable pageable) {
+
+        Page<AccountEntity> allByStatus = accountRepository.getAllByStatus(status, pageable);
+
+        return allByStatus.map(accountMapper::accountEntityToDto);
+    }
+
 
     private String generateUniqueAccountNumber() {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
