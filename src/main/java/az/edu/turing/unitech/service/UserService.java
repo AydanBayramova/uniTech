@@ -17,8 +17,6 @@ public interface UserService {
 
     Page<UserDto> getAll(Pageable pageable);
 
-    UserDto update(Long id, UserDto userDto);
-
     UserDto update(String pin, UserDto userDto);
 
     UserDto createUser(UserDto userDto);

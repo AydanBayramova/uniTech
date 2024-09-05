@@ -15,16 +15,15 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
            UserDto createdUser=userService.createUser(userDto);
            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @RequestBody UserDto userDto)
+    @PutMapping("/{pin}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable String pin, @RequestBody UserDto userDto)
     {
-        UserDto updatedUser=userService.update(id,userDto);
+        UserDto updatedUser=userService.update(pin,userDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
