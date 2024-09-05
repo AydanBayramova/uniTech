@@ -58,10 +58,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public void deleteAll() {
-
-    }
 
     @Override
     public void verifyUser(Long id) {
@@ -81,13 +77,6 @@ public class UserServiceImpl implements UserService {
 //    }
 
 
-    @Override
-    public Page<UserDto> getAllByStatus(Status status, Pageable pageable) {
-
-        Page<UserEntity> allByStatus = userRepository.findAllByStatus(status, pageable);
-
-        return allByStatus.map(userMapper::userEntityToDto);
-    }
 
 
 }
