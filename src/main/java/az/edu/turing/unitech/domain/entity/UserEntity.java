@@ -34,9 +34,6 @@ public class UserEntity {
 
     private LocalDateTime updateDate;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
-
     private LocalDateTime createDate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
