@@ -15,7 +15,7 @@ import java.util.List;
 public class AccountController {
     private final AccountService accountService;
 
-   /*  @GetMapping("/all")
+     @GetMapping("/all")
     public ResponseEntity<List<AccountDto>> getAllAccounts() {
         List<AccountDto> accounts = accountService.getAllAccounts();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
@@ -28,10 +28,9 @@ public class AccountController {
     }
 
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteAccount(@PathVariable long id) {
-           accountService.deleteAccountById(id);
+    @DeleteMapping("/{accountNumber}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable String accountNumber) {
+           accountService.deleteAccountByAccountNumber(accountNumber);
            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -42,7 +41,6 @@ public class AccountController {
     }
 
 
-    */
 
 
 }
