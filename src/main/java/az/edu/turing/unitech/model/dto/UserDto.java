@@ -21,6 +21,8 @@ public class UserDto {
 
     private String pin;
 
+    private String email;
+
     private LocalDateTime updateDate;
 
     private LocalDateTime createDate;
