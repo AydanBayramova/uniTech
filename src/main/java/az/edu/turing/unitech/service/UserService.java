@@ -13,8 +13,6 @@ import java.util.Optional;
 @Service
 public interface UserService {
 
-    Optional<UserDto> getUserById(UserDto userDto);
-
     Page<UserDto> getAll(Pageable pageable);
 
     UserDto update(Long id, UserDto userDto);

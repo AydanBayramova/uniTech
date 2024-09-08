@@ -1,9 +1,6 @@
 package az.edu.turing.unitech.service;
 
-import az.edu.turing.unitech.domain.entity.UserEntity;
-import az.edu.turing.unitech.exception.IllegalArgumentException;
 import az.edu.turing.unitech.model.dto.AccountDto;
-import az.edu.turing.unitech.model.dto.UserDto;
 import az.edu.turing.unitech.model.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,15 +12,13 @@ public interface AccountService {
 
     AccountDto createAccount(AccountDto accountDto);
 
-    AccountDto updateAccount(Long id, AccountDto accountDto);
-
-    void deleteAccountByAccountNumber(String accountNumber);
-
     List<AccountDto> getAllAccounts();
 
     List<AccountDto> getAllActiveAccounts();
 
     List<AccountDto> getAllDeactivateAccounts();
+
+    void deleteAccountByAccountNumber(String accountNumber);
 
     Optional<AccountDto> getActiveAccountByAccountNumber(String accountNumber);
 
