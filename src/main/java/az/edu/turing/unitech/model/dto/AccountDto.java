@@ -15,8 +15,6 @@ public class AccountDto {
 
     private BigDecimal balance;
 
-    private String password;
-
     private String cardNumber;
 
     private UserEntity user;

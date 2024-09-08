@@ -26,15 +26,15 @@ public class UserServiceImpl implements UserService {
     private final AccountRepository accountRepository;
 
     @Override
-    public Optional<UserDto> getUserById(UserDto userDto) {
-        return Optional.empty();
-    }
-
-    @Override
     public Page<UserDto> getAll(Pageable pageable) {
 
         Page<UserEntity> all = userRepository.findAll(pageable);
         return all.map(userMapper::userEntityToDto);
+    }
+
+    @Override
+    public UserDto update(Long id, UserDto userDto) {
+        return null;
     }
 
     @Override
@@ -77,21 +77,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void verifyUser(Long id) {
 
+                UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
     }
-
-//    @Override
-//    public void verifyUser(Long id) {
-//
-//        UserEntity user = userRepository.findById(id)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
-//
-//        if (user.getStatus() == Status.DEACTIVATE || user.getStatus() == Status.DELETED) {
-//            throw new IllegalArgumentException("User is not active and cannot be verified");
-//        }
-//    }
-
-
 
 
 }
