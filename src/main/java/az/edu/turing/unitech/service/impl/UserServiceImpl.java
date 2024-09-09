@@ -22,8 +22,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final AccountMapper accountMapper;
-    private final AccountRepository accountRepository;
+
 
     @Override
     public Page<UserDto> getAll(Pageable pageable) {
@@ -32,10 +31,7 @@ public class UserServiceImpl implements UserService {
         return all.map(userMapper::userEntityToDto);
     }
 
-    @Override
-    public UserDto update(Long id, UserDto userDto) {
-        return null;
-    }
+
 
     @Override
     public UserDto update(String pin, UserDto userDto) {
