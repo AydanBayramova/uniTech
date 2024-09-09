@@ -64,10 +64,6 @@ public class AccountServiceImpl implements AccountService {
         return accountMapper.accountEntityToDto(save);
     }
 
-    @Override
-    public AccountDto updateAccount(Long id, AccountDto accountDto) {
-        return null;
-    }
 
 
     @Override
@@ -88,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountDto> getAllActiveAccounts() {
         Session session = em.unwrap(Session.class);
         Filter filter= session.enableFilter("statusFilter");
-        filter.setParameter("status", Status.ACTIVE);
+        filter.setParameter("status", Status.ACTIVE.toString());
         List<AccountDto> activeAccounts =accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
         session.disableFilter("statusFilter");
         return activeAccounts;
@@ -98,7 +94,7 @@ public class AccountServiceImpl implements AccountService {
     public List<AccountDto> getAllDeactivateAccounts() {
         Session session = em.unwrap(Session.class);
         Filter filter= session.enableFilter("statusFilter");
-        filter.setParameter("status", Status.DEACTIVATE);
+        filter.setParameter("status", Status.DEACTIVATE.toString());
         List<AccountDto> deactivatedAccounts=accountMapper.accountEntityListToAccountDtoList(accountRepository.findAll());
         session.disableFilter("statusFilter");
         return deactivatedAccounts;

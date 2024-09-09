@@ -28,8 +28,5 @@ public interface AccountService {
 
     void changePassword(Long userId, String oldPassword, String newPassword);
 
-
     Page<AccountDto> getAllByStatus(Status status, Pageable pageable);
-
-
 }
