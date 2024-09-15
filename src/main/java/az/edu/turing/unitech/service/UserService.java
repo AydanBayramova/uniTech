@@ -1,5 +1,6 @@
 package az.edu.turing.unitech.service;
 
+import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.domain.repository.UserRepository;
 import az.edu.turing.unitech.model.dto.UserDto;
 import az.edu.turing.unitech.model.enums.Status;
@@ -23,5 +24,8 @@ public interface UserService {
 
     void verifyUser(Long id);
 
+    void saveUser(UserEntity user);
+
+    boolean existsByPin(String pin);
 
 }
