@@ -47,7 +47,7 @@ public class AccountEntity {
     @Column(nullable = false)
     private BigDecimal balance;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 60)
     private String password;
 
     private LocalDateTime createdAt;
