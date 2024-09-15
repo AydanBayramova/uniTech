@@ -79,6 +79,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
     }
+    public void saveUser(UserEntity user) {
+        userRepository.save(user);
+    }
 
+    public boolean existsByPin(String pin) {
+        return userRepository.existsByPin(pin);
+    }
 
 }
