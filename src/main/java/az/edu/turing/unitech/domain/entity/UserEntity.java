@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -29,6 +31,17 @@ public class UserEntity {
     @Column(name = "pin", nullable = false, unique = true, length = 7)
     @Size(min = 7, max = 7, message = ("Pin must be exactly 7 symbol!"))
     private String pin;
+
+    @Column(nullable = false, length = 60)
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)  // Fetch roles immediately when user is loaded
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Roles> roles = new HashSet<>();
 
     private String email;
 
