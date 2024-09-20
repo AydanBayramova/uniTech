@@ -1,5 +1,6 @@
 package az.edu.turing.unitech.service.impl;
 
+import az.edu.turing.unitech.domain.entity.MyUserDetails;
 import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,6 @@ public class MyUserDetailsService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByPin(pin).orElseThrow(() ->
                 new UsernameNotFoundException(pin));
 
-        return new org.springframework.security.core.userdetails.User(
-                userEntity.getPin(),
-                userEntity.getPassword(),
-                userEntity.getRoles()
-        );
+        return new MyUserDetails(userEntity);
     }
 }
