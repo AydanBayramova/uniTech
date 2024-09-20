@@ -37,7 +37,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final UserService userService;
     private final AccountMapper accountMapper;
-    private final Notification notificationService;
+
+    private final Notification notification;
 
     private final EntityManager em;
 
@@ -48,8 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto createAccount(AccountDto accountDto) {
-
-        userService.verifyUser(accountDto.getUser().getId());
+        
 
         String accountNumber = generateUniqueAccountNumber();
         accountDto.setAccountNumber(accountNumber);
@@ -60,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
         accountEntity.setStatus(Status.ACTIVE);
 
         AccountEntity save = accountRepository.save(accountEntity);
-        notificationService.sendAccountCreationNotification(save);
+        notification.sendAccountCreationNotification(save);
 
         return accountMapper.accountEntityToDto(save);
     }
@@ -128,32 +128,8 @@ public class AccountServiceImpl implements AccountService {
         AccountEntity entity = accountEntity.get();
         entity.setBalance(entity.getBalance().add(BigDecimal.valueOf(amount)));
         accountRepository.save(entity);
-        notificationService.sendBalanceUpdateNotification(entity);
+        notification.sendBalanceUpdateNotification(entity);
         return accountMapper.accountEntityToDto(entity);
-    }
-
-    @Override
-    public void changePassword(Long userId, String oldPassword, String newPassword) {
-        AccountEntity account = accountRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        if (!passwordEncoder.matches(oldPassword, account.getPassword())) {
-            throw new IllegalArgumentException("Old password is incorrect");
-        }
-        if (passwordEncoder.matches(newPassword, account.getPassword())) {
-            throw new IllegalArgumentException("New password cannot be the same as the old password");
-        }
-
-        validateNewPassword(newPassword);
-
-        String encode = passwordEncoder.encode(newPassword);
-
-        account.setPassword(encode);
-        account.setUpdatedAt(LocalDateTime.now());
-        accountRepository.save(account);
-
-        notificationService.sendPasswordChangeNotification(account);
-
     }
 
     @Override
@@ -169,11 +145,7 @@ public class AccountServiceImpl implements AccountService {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
     }
 
-    private void validateNewPassword(String newPassword) {
-        if (newPassword == null || newPassword.length() < 6) {
-            throw new IllegalArgumentException("New password must be at least 6 characters");
-        }
-    }
+
 
 
 }

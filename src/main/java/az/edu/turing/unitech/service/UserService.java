@@ -20,12 +20,14 @@ public interface UserService {
 
     UserDto createUser(UserDto userDto);
 
-    void deleteById(Long id);
+    void deleteById(String pin);
 
     void verifyUser(Long id);
 
     void saveUser(UserEntity user);
 
     boolean existsByPin(String pin);
+
+    void changePassword(Long userId, String oldPassword, String newPassword);
 
 }

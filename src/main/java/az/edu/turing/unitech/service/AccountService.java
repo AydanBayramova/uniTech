@@ -26,7 +26,5 @@ public interface AccountService {
 
     AccountDto addBalance(String accountNumber, Double amount);
 
-    void changePassword(Long userId, String oldPassword, String newPassword);
-
     Page<AccountDto> getAllByStatus(Status status, Pageable pageable);
 }

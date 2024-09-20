@@ -35,7 +35,7 @@ public class UserEntity {
     @Column(nullable = false, length = 60)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)  // Fetch roles immediately when user is loaded
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -51,4 +51,9 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AccountEntity> accountEntities;
+
+    public boolean hasRole(String roleName) {
+        return roles.stream()
+                .anyMatch(role -> role.getRole().equals(roleName));
+    }
 }
