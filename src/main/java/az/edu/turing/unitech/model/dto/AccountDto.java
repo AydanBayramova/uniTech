@@ -17,7 +17,5 @@ public class AccountDto {
 
     private String cardNumber;
 
-    private UserEntity user;
-
     private Status status;
 }

@@ -1,6 +1,7 @@
 package az.edu.turing.unitech.service.impl;
 
 import az.edu.turing.unitech.domain.entity.AccountEntity;
+import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.exception.EmailSendingException;
 import az.edu.turing.unitech.service.Notification;
 import jakarta.mail.internet.MimeMessage;
@@ -43,13 +44,13 @@ public class NotificationImpl implements Notification {
     }
 
     @Override
-    public void sendPasswordChangeNotification(AccountEntity accountEntity) {
+    public void sendPasswordChangeNotification(UserEntity userEntity) {
 
-        String email = accountEntity.getUser().getEmail();
+        String email = userEntity.getEmail();
         String subject = "Password Change";
-        String message = "Dear " + accountEntity.getUser().getFirstName() + ",\n\n"
+        String message = "Dear " + userEntity.getFirstName() + ",\n\n"
                 + "Your account has been successfully changed.\n"
-                + "Your account number: " + accountEntity.getAccountNumber() + "\n"
+                + "Your account number: " + userEntity.getPin()+ "\n"
                 + "Thank you, Turing Bank.";
 
         sendEmail(email, subject, message);
