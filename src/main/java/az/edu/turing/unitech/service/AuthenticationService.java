@@ -10,15 +10,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final MyUserDetailsService myUserDetailsService;  // Inject your MyUserDetailsService
-    private final BCryptPasswordEncoder passwordEncoder;  // Inject BCryptPasswordEncoder
+    private final MyUserDetailsService myUserDetailsService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public boolean authenticateUser(String pin, String rawPassword) {
         UserDetails userDetails = myUserDetailsService.loadUserByUsername(pin);
         String storedHashedPassword = userDetails.getPassword();
 
-        System.out.println("Raw password: " + rawPassword);  // Print the raw password
-        System.out.println("Stored hashed password: " + storedHashedPassword);  // Print the hashed password
+        System.out.println("Raw password: " + rawPassword);
+        System.out.println("Stored hashed password: " + storedHashedPassword);
 
         if (passwordEncoder.matches(rawPassword, storedHashedPassword)) {
             System.out.println("Password matches!");
