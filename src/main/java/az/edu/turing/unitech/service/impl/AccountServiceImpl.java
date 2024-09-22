@@ -51,33 +51,33 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto createAccount(AccountDto accountDto, String token) {
-        // Extract the user ID from the token
+
         String userId = jwtTokenProvider.getUserIdFromToken(token);
 
-        // Find the user associated with this token ID
+
         UserEntity user = userRepository.findById(Long.parseLong(userId))
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // Generate a unique account number for the new account
+
         String accountNumber = generateUniqueAccountNumber();
         accountDto.setAccountNumber(accountNumber);
 
-        // Map the DTO to the AccountEntity and set additional fields
+
         AccountEntity accountEntity = accountMapper.accountDtoToAccountEntity(accountDto);
         accountEntity.setCreatedAt(LocalDateTime.now());
         accountEntity.setUpdatedAt(LocalDateTime.now());
         accountEntity.setStatus(Status.ACTIVE);
 
-        // Associate the account with the user
+
         accountEntity.setUser(user);
 
-        // Save the account entity to the database
+
         AccountEntity savedAccount = accountRepository.save(accountEntity);
 
-        // Optionally send a notification of account creation
+
         notification.sendAccountCreationNotification(savedAccount);
 
-        // Return the saved account as a DTO
+
         return accountMapper.accountEntityToDto(savedAccount);
     }
 
