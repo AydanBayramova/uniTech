@@ -40,12 +40,21 @@ public class AccountController {
         return new ResponseEntity<>(updatedAccount,HttpStatus.CREATED);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto account) {
-        AccountDto account1 = accountService.createAccount(account);
-        return new ResponseEntity<>(account1,HttpStatus.CREATED);
-    }
 
+    @PostMapping("/create")
+    public ResponseEntity<AccountDto> createAccount(
+            @RequestBody AccountDto accountDto,
+            @RequestHeader("Authorization") String token) {
+
+
+        String jwtToken = token.substring(7);
+
+
+        AccountDto createdAccount = accountService.createAccount(accountDto, jwtToken);
+
+
+        return new ResponseEntity<>(createdAccount, HttpStatus.CREATED);
+    }
 
 
 }

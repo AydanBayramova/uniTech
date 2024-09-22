@@ -17,9 +17,14 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String pin) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByPin(pin).orElseThrow(() ->
-                new UsernameNotFoundException(pin));
+        UserEntity userEntity = userRepository.findByPin(pin)
+                .orElseThrow(() -> new UsernameNotFoundException("PIN not found: " + pin));
+
+        System.out.println("Loaded PIN: " + userEntity.getPin());
+        System.out.println("Stored password: " + userEntity.getPassword());
 
         return new MyUserDetails(userEntity);
     }
+
+
 }
