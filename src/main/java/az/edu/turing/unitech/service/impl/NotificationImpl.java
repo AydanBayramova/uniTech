@@ -6,6 +6,7 @@ import az.edu.turing.unitech.exception.EmailSendingException;
 import az.edu.turing.unitech.service.Notification;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class NotificationImpl implements Notification {
                 + "Your account has been successfully created.\n"
                 + "Your account number: " + accountEntity.getAccountNumber() + "\n"
                 + "Initial balance: " + accountEntity.getBalance() + "\n\n"
-                + "Thank you, Turing Bank.";
+                + "Thank you.";
 
         sendEmail(email, subject, message);
     }
@@ -95,20 +96,19 @@ public class NotificationImpl implements Notification {
 
     }
 
-    public void sendEmail(String to, String subject, String text) {
+    public void sendEmail(String to, String subject, String body) {
         try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("bayramoffaaydan1@gmail.com");
+            message.setSubject(subject);
+            message.setText(body);
 
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(text);
-
-            mailSender.send(mimeMessage);
-        } catch (jakarta.mail.MessagingException e) {
-            throw new RuntimeException(e);
-        } catch (RuntimeException e) {
-            throw new EmailSendingException("Email can't be sending" + e);
+            mailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new EmailSendingException("Failed to send email to " + to + ": " + e.getMessage());
         }
     }
+
+
 }
