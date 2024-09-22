@@ -9,13 +9,9 @@ import java.math.BigDecimal;
 @Data
 public class AccountDto {
 
-    private Long accountId;
-
     private String accountNumber;
 
     private BigDecimal balance;
-
-    private String cardNumber;
 
     private Status status;
 }

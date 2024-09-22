@@ -28,6 +28,8 @@ public interface UserService {
 
     boolean existsByPin(String pin);
 
+    void assignAdminRole(String pin);
+
     void changePassword(Long userId, String oldPassword, String newPassword);
 
 }

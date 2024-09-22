@@ -1,8 +1,10 @@
 package az.edu.turing.unitech.service.impl;
 
+import az.edu.turing.unitech.config.JwtTokenProvider;
 import az.edu.turing.unitech.domain.entity.AccountEntity;
 import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
+import az.edu.turing.unitech.domain.repository.UserRepository;
 import az.edu.turing.unitech.exception.AccountNotFoundException;
 import az.edu.turing.unitech.exception.InvalidAmountException;
 import az.edu.turing.unitech.model.dto.AccountDto;
@@ -35,7 +37,7 @@ import java.util.UUID;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final AccountMapper accountMapper;
 
     private final Notification notification;
@@ -44,27 +46,40 @@ public class AccountServiceImpl implements AccountService {
 
     private final PasswordEncoder passwordEncoder;
 
- 
+    private final JwtTokenProvider jwtTokenProvider;
 
 
     @Override
-    public AccountDto createAccount(AccountDto accountDto) {
-        
+    public AccountDto createAccount(AccountDto accountDto, String token) {
+        // Extract the user ID from the token
+        String userId = jwtTokenProvider.getUserIdFromToken(token);
 
+        // Find the user associated with this token ID
+        UserEntity user = userRepository.findById(Long.parseLong(userId))
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Generate a unique account number for the new account
         String accountNumber = generateUniqueAccountNumber();
         accountDto.setAccountNumber(accountNumber);
 
+        // Map the DTO to the AccountEntity and set additional fields
         AccountEntity accountEntity = accountMapper.accountDtoToAccountEntity(accountDto);
         accountEntity.setCreatedAt(LocalDateTime.now());
         accountEntity.setUpdatedAt(LocalDateTime.now());
         accountEntity.setStatus(Status.ACTIVE);
 
-        AccountEntity save = accountRepository.save(accountEntity);
-        notification.sendAccountCreationNotification(save);
+        // Associate the account with the user
+        accountEntity.setUser(user);
 
-        return accountMapper.accountEntityToDto(save);
+        // Save the account entity to the database
+        AccountEntity savedAccount = accountRepository.save(accountEntity);
+
+        // Optionally send a notification of account creation
+        notification.sendAccountCreationNotification(savedAccount);
+
+        // Return the saved account as a DTO
+        return accountMapper.accountEntityToDto(savedAccount);
     }
-
 
 
     @Override
