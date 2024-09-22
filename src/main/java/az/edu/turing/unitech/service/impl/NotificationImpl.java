@@ -99,7 +99,7 @@ public class NotificationImpl implements Notification {
     public void sendEmail(String to, String subject, String body) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("bayramoffaaydan1@gmail.com");
+            message.setTo("");
             message.setSubject(subject);
             message.setText(body);
 

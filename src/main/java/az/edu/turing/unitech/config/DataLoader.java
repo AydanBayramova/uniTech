@@ -48,7 +48,7 @@ public class DataLoader {
                 adminUser.setFirstName("Admin");
                 adminUser.setLastName("User");
                 adminUser.setPin("0000001");
-                adminUser.setEmail("elvinaliyevinfo@gmail.com");
+                adminUser.setEmail("");
                 adminUser.setPassword(passwordEncoder.encode("adminPass"));
 
                 adminUser.getRoles().add(userRole);
