@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userMapper.userDtoToEntity(userDto);
 
 
-        Roles defaultRole = roleRepository.findByRole("ROLE_USER")
+        Roles defaultRole = roleRepository.findByRole("USER")
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         user.getRoles().add(defaultRole);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -128,6 +128,19 @@ public class UserServiceImpl implements UserService {
     public boolean existsByPin(String pin) {
         return userRepository.existsByPin(pin);
     }
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public void assignAdminRole(String pin) {
+        UserEntity user = userRepository.findByPin(pin)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        Roles adminRole = roleRepository.findByRole("ADMIN")
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+
+        if (!user.getRoles().contains(adminRole)) {
+            user.getRoles().add(adminRole);
+            userRepository.save(user);
+        }
+    }
 
 }

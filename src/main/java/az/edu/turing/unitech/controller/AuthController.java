@@ -5,6 +5,7 @@ import az.edu.turing.unitech.domain.entity.UserEntity;
 import az.edu.turing.unitech.model.dto.LoginRequest;
 import az.edu.turing.unitech.model.dto.LoginResponse;
 import az.edu.turing.unitech.model.dto.RegistrationRequest;
+import az.edu.turing.unitech.model.dto.UserDto;
 import az.edu.turing.unitech.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -52,14 +53,14 @@ public class AuthController {
             return ResponseEntity.badRequest().body("PIN is already taken");
         }
 
-        UserEntity newUser = new UserEntity();
+        UserDto newUser = new UserDto();
         newUser.setFirstName(registrationRequest.getFirstName());
         newUser.setLastName(registrationRequest.getLastName());
         newUser.setPin(registrationRequest.getPin());
         newUser.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));  // Encrypt password
         newUser.setEmail(registrationRequest.getEmail());
 
-        userService.saveUser(newUser);
+        userService.createUser(newUser);
 
         return ResponseEntity.ok("User registered successfully");
     }
