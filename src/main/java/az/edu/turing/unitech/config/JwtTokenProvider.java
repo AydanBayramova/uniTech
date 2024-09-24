@@ -4,27 +4,36 @@ import az.edu.turing.unitech.domain.entity.MyUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
 
-
-    private final String SECRET_KEY = "thisissecretkeyhugogoguprt9gh9ptyedgypegf9p3rg6ujioyjoijiojhoyijhiouhoiujhuuit7ctuxtvftxeszrway";
+    private final String SECRET_KEY = "thisissecretkeyhugog3rg6ujiohueyrufureobfeorbyuwuegfuegfuerfuweywedweuordwe47r3jhuuit7ctuxtvftxeszrway";
     private final long EXPIRATION_TIME = 86400000;
 
 
     public String generateToken(Authentication authentication) {
         MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
 
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(role -> role.getAuthority())
+                .collect(Collectors.toList()));
+        claims.put("userId", userDetails.getId());
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .setId(userDetails.getId().toString())
                 .setIssuedAt(new Date())
@@ -34,6 +43,29 @@ public class JwtTokenProvider {
     }
 
 
+    public List<String> getRolesFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.get("roles", List.class);
+    }
+    public void logTokenClaims(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        System.out.println("Token Claims: " + claims);
+        System.out.println("User ID: " + claims.get("userId"));
+        System.out.println("Roles: " + claims.get("roles"));
+    }
+
+
+
     public String getUserIdFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
@@ -41,9 +73,9 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        // The ID was set in the token when it was created, so we retrieve it here
-        return claims.getId();
+        return claims.get("userId", String.class);
     }
+
 
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
@@ -52,41 +84,23 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.getSubject();
-    }
-
-    private String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        System.out.println("Authorization Header: " + bearerToken);
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+        return claims.getSubject();  // Extract username from token
     }
 
 
     public boolean validateToken(String token, UserDetails userDetails) {
         String username = getUsernameFromToken(token);
-        System.out.println("Token Username: " + username);
-        System.out.println("UserDetails Username: " + userDetails.getUsername());
-
-        boolean isTokenExpired = isTokenExpired(token);
-        System.out.println("Is Token Expired: " + isTokenExpired);
-
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
     }
 
 
     private boolean isTokenExpired(String token) {
-        Date expirationDate = Jwts.parserBuilder()
+        Date expiration = Jwts.parserBuilder()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getExpiration();
-        System.out.println("Token Expiration Date: " + expirationDate);
-        return expirationDate.before(new Date());
+        return expiration.before(new Date());
     }
-
-
 }

@@ -4,6 +4,8 @@ import az.edu.turing.unitech.model.dto.ChangePasswordRequest;
 import az.edu.turing.unitech.model.dto.UserDto;
 import az.edu.turing.unitech.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +36,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+
+    @PostMapping("/assign-role/{pin}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> assignAdminRole(@PathVariable String pin) {
+        try {
+            userService.assignAdminRole(pin);
+            return ResponseEntity.ok("Admin role assigned to user with pin: " + pin);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage()); // Handle exceptions
+        }
+    }
     @PutMapping("/{userId}/change-password")
     public ResponseEntity<Void> changePassword(
             @PathVariable Long userId,
@@ -43,5 +56,10 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("all")
+    public ResponseEntity<Page<UserDto>> getAllUsers(Pageable pageable) {
+        Page<UserDto> all = userService.getAll(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(all);
+    }
 
 }

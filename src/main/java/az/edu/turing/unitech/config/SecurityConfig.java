@@ -31,9 +31,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()  // Updated Swagger paths
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/users/**", "/api/v1/accounts/**").permitAll()// Allow both USER and ADMIN roles
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                       .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/users/**", "/api/v1/accounts/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
