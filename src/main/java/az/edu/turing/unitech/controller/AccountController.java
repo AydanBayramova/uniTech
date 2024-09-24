@@ -1,8 +1,11 @@
 package az.edu.turing.unitech.controller;
 
 import az.edu.turing.unitech.model.dto.AccountDto;
+import az.edu.turing.unitech.model.dto.AccountToAccountRequest;
 import az.edu.turing.unitech.model.enums.Status;
 import az.edu.turing.unitech.service.AccountService;
+import az.edu.turing.unitech.service.TransferService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +22,17 @@ import java.util.Optional;
 @RequestMapping("/api/v1/accounts")
 public class AccountController {
     private final AccountService accountService;
+    private final TransferService transferService;
+
+    @PutMapping("transferAccount")
+    public ResponseEntity<String> accountToAccountTransfer(@Valid @RequestBody AccountToAccountRequest request) {
+        try {
+            transferService.accountToAccountTransfer(request);
+            return ResponseEntity.status(HttpStatus.OK).body("Transfer successful");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
 
      @GetMapping("/all")
     public ResponseEntity<List<AccountDto>> getAllAccounts() {
