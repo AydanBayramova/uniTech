@@ -73,7 +73,8 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.get("userId", String.class);
+        Integer userId = claims.get("userId", Integer.class);
+        return String.valueOf(userId);
     }
 
 
