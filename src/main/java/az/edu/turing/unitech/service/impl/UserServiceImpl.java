@@ -82,7 +82,6 @@ public class UserServiceImpl implements UserService {
             throw new java.lang.IllegalArgumentException("New password must be at least 6 characters");
         }
     }
-
     @Override
     public UserDto createUser(UserDto userDto) {
         if (userRepository.findByLastNameAndFirstName(userDto.getFirstName(), userDto.getLastName()).isPresent()) {
@@ -91,18 +90,23 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findByPin(userDto.getPin()).isPresent()) {
             throw new UsernameAlreadyExistsException("User with this pin already exists.");
         }
+
         UserEntity user = userMapper.userDtoToEntity(userDto);
+
+
+        System.out.println("Password (already encoded): " + user.getPassword());
 
 
         Roles defaultRole = roleRepository.findByRole("USER")
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         user.getRoles().add(defaultRole);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         UserEntity savedUser = userRepository.save(user);
+
         return userMapper.userEntityToDto(savedUser);
-
-
     }
+
+
 
     @Override
     @Transactional
@@ -114,20 +118,13 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Override
-    public void verifyUser(Long id) {
-        UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
-    }
 
-    public void saveUser(UserEntity user) {
-        userRepository.save(user);
-    }
 
     public boolean existsByPin(String pin) {
         return userRepository.existsByPin(pin);
     }
+
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public void assignAdminRole(String pin) {

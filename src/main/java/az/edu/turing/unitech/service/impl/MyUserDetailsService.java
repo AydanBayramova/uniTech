@@ -20,11 +20,11 @@ public class MyUserDetailsService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByPin(pin)
                 .orElseThrow(() -> new UsernameNotFoundException("PIN not found: " + pin));
 
+
         System.out.println("Loaded PIN: " + userEntity.getPin());
-        System.out.println("Stored password: " + userEntity.getPassword());
+        System.out.println("Stored password (hashed): " + userEntity.getPassword());
 
         return new MyUserDetails(userEntity);
     }
-
 
 }

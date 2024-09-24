@@ -22,10 +22,6 @@ public interface UserService {
 
     void deleteById(String pin);
 
-    void verifyUser(Long id);
-
-    void saveUser(UserEntity user);
-
     boolean existsByPin(String pin);
 
     void assignAdminRole(String pin);
