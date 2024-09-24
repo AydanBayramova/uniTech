@@ -25,7 +25,7 @@ public class DataLoader {
     @Bean
     CommandLineRunner initRolesAndAdmin() {
         return args -> {
-            // Initialize roles if they don't exist
+
             if (roleRepository.findByRole("USER").isEmpty()) {
                 Roles userRole = new Roles();
                 userRole.setRole("USER");
@@ -38,11 +38,11 @@ public class DataLoader {
                 roleRepository.save(adminRole);
             }
 
-            // Fetch roles
+
             Roles userRole = roleRepository.findByRole("USER").orElseThrow(() -> new RuntimeException("USER role not found"));
             Roles adminRole = roleRepository.findByRole("ADMIN").orElseThrow(() -> new RuntimeException("ADMIN role not found"));
 
-            // Initialize admin user if not present
+
             if (userRepository.findByPin("0000001").isEmpty()) {
                 UserEntity adminUser = new UserEntity();
                 adminUser.setFirstName("Admin");
