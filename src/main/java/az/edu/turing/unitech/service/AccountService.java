@@ -5,6 +5,7 @@ import az.edu.turing.unitech.model.enums.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +28,5 @@ public interface AccountService {
     AccountDto addBalance(String accountNumber, Double amount);
 
     Page<AccountDto> getAllByStatus(Status status, Pageable pageable);
+
 }
