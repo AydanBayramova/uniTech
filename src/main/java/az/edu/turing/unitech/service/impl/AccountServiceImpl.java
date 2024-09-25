@@ -160,7 +160,4 @@ public class AccountServiceImpl implements AccountService {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 16);
     }
 
-
-
-
 }

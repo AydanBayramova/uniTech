@@ -1,9 +1,12 @@
 package az.edu.turing.unitech.service.impl;
 
+import az.edu.turing.unitech.domain.entity.AccountEntity;
 import az.edu.turing.unitech.domain.repository.AccountRepository;
+import az.edu.turing.unitech.exception.AccountNotFoundException;
 import az.edu.turing.unitech.exception.CommonBadRequestException;
 import az.edu.turing.unitech.model.dto.AccountDto;
 import az.edu.turing.unitech.model.dto.AccountToAccountRequest;
+import az.edu.turing.unitech.model.enums.Status;
 import az.edu.turing.unitech.model.mapper.AccountMapper;
 import az.edu.turing.unitech.service.AccountService;
 import az.edu.turing.unitech.service.Notification;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,23 +24,23 @@ import java.math.BigDecimal;
 public class TransferServiceImpl implements TransferService {
 
     private final AccountRepository accountRepository;
-    private final Notification notification;
-    private final AccountService accountService;
     private final AccountMapper accountMapper;
 
     @Override
     public void accountToAccountTransfer(AccountToAccountRequest request) {
-        AccountDto sender = accountService.getActiveAccountByAccountNumber(request.fromAccountNumber()).get();
+        AccountEntity sender = accountRepository.findByAccountNumberAndStatus(request.fromAccountNumber(), Status.ACTIVE)
+                .orElseThrow(()-> new AccountNotFoundException("no such active account"));
         checkAmountAndBalance(sender.getBalance(), request.amount());
 
-        AccountDto receiver = accountService.getActiveAccountByAccountNumber(request.toAccountNumber()).get();
-        validateReceiverAccount(sender, receiver);
+        AccountEntity receiver = accountRepository.findByAccountNumberAndStatus(request.toAccountNumber(), Status.ACTIVE)
+                .orElseThrow(()-> new AccountNotFoundException("no such active account"));
+        validateReceiverAccount(accountMapper.accountEntityToDto(sender), accountMapper.accountEntityToDto(receiver));
 
         sender.setBalance(sender.getBalance().subtract(request.amount()));
-        accountRepository.save(accountMapper.accountDtoToAccountEntity(sender));
+       accountRepository.save(sender);
 
         receiver.setBalance(receiver.getBalance().add(request.amount()));
-        accountRepository.save(accountMapper.accountDtoToAccountEntity(receiver));
+        accountRepository.save(receiver);
     }
 
 
